@@ -1,0 +1,5 @@
+{
+  "name": "Anim’emploi – Territoire de Morlaix",
+  "description": "A web application to connect youth organizations and animators in the Morlaix region. Structures can post job offers, and animators can find jobs and submit their CVs.",
+  "requestFramePermissions": []
+}
