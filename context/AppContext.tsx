@@ -16,7 +16,86 @@ const getFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
 
 // --- Initial Data for Structures (used if localStorage is empty) ---
 const INITIAL_STRUCTURES_DATA: Structure[] = [
-  // ... (data is now linked to users, this is just a fallback)
+  {
+    id: 'structure-plougasnou-1',
+    userId: 'user-plougasnou-1',
+    name: 'Mairie de Plougasnou',
+    commune: 'Plougasnou',
+    address: '1 Rue des Martyrs, 29630 Plougasnou',
+    ageGroup: 'Enfants de 3 à 12 ans',
+    openingPeriods: 'Périscolaire, Mercredis & Vacances',
+    team: '1 directrice, 5 animateurs BAFA',
+    educationalObjectives: ["Favoriser l'autonomie", "Développer la créativité", "Apprendre le vivre-ensemble"],
+    activities: ["Aide aux devoirs", "Jeux sportifs", "Ateliers manuels", "Sorties nature"],
+    openingHours: '7h30-9h00 / 16h30-18h30',
+    contact: {
+      email: 'rh@plougasnou.fr',
+      phone: '02 98 72 37 73',
+      registrationLink: '#',
+    },
+    website: 'https://www.mairie-plougasnou.fr'
+  },
+  {
+    id: 'structure-carantec-2',
+    userId: 'user-carantec-2',
+    name: 'Centre de loisirs de Carantec',
+    commune: 'Carantec',
+    address: '25 Rue de la Grève Blanche, 29660 Carantec',
+    ageGroup: 'Jeunes de 6 à 18 ans',
+    openingPeriods: 'Vacances scolaires',
+    team: '1 directeur BAFD, 8 animateurs BAFA',
+    educationalObjectives: ["Découverte du milieu marin", "Sensibilisation à l'environnement", "Esprit d'équipe et coopération"],
+    activities: ["Voile", "Kayak", "Pêche à pied", "Grands jeux sur la plage", "Veillées"],
+    openingHours: '9h00 - 17h00',
+    contact: {
+      email: 'contact@alsh-carantec.bzh',
+      phone: '02 98 67 00 50',
+      registrationLink: '#',
+    },
+    website: '#'
+  },
+  {
+    id: 'structure-morlaix-3',
+    userId: 'user-morlaix-3',
+    name: 'Service Jeunesse Morlaix',
+    commune: 'Morlaix',
+    address: 'Place des Otages, 29600 Morlaix',
+    ageGroup: 'Ados de 10 à 17 ans',
+    openingPeriods: 'Toute l\'année',
+    team: '2 coordinateurs, 4 animateurs BPJEPS',
+    educationalObjectives: ["Accompagnement de projets jeunes", "Prévention et citoyenneté", "Accès à la culture et aux sports"],
+    activities: ["Stages multisports", "Ateliers numériques", "Sorties culturelles (concerts, expos)", "Organisation d'événements"],
+    openingHours: 'Variable selon les activités',
+    contact: {
+      email: 'jeunesse@villedemorlaix.org',
+      phone: '02 98 15 20 60'
+    },
+    website: 'https://www.ville.morlaix.fr'
+  }
+];
+
+// --- Initial CV Data ---
+const INITIAL_CV_SUBMISSIONS: CVSubmission[] = [
+    {
+      id: 'cv-1',
+      firstName: 'Léa',
+      lastName: 'Martin',
+      age: '20',
+      commune: 'Morlaix',
+      diploma: 'BAFA complet',
+      experience: '2 saisons en centre de loisirs (6-10 ans). Spécialité : grands jeux en extérieur et activités manuelles.',
+      contact: 'lea.martin@email.com'
+    },
+    {
+      id: 'cv-2',
+      firstName: 'Tom',
+      lastName: 'Dubois',
+      age: '24',
+      commune: 'Carantec',
+      diploma: 'BPJEPS APT (Activités Physiques pour Tous)',
+      experience: 'Animateur sportif depuis 3 ans en service jeunesse. Encadrement de stages multisports (foot, basket, escalade). Permis B.',
+      contact: '06 12 34 56 78'
+    }
 ];
 
 // --- Initial Admin User ---
@@ -193,7 +272,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   // --- CV Management ---
-  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>('cvSubmissions', []));
+  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>('cvSubmissions', INITIAL_CV_SUBMISSIONS));
 
   useEffect(() => {
     localStorage.setItem('cvSubmissions', JSON.stringify(cvSubmissions));

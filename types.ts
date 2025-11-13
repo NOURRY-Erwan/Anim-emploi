@@ -60,6 +60,7 @@ export interface CVSubmission {
   firstName: string;
   lastName: string;
   age: string;
+  commune: string;
   diploma: string;
   experience: string;
   cvFileName?: string;

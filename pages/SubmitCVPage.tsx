@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../hooks/useAppContext';
+import { COMMUNES } from '../constants';
 
 const SubmitCVPage: React.FC = () => {
     const { addCVSubmission } = useAppContext();
@@ -10,6 +11,7 @@ const SubmitCVPage: React.FC = () => {
         firstName: '',
         lastName: '',
         age: '',
+        commune: '',
         diploma: '',
         experience: '',
         contact: ''
@@ -17,7 +19,7 @@ const SubmitCVPage: React.FC = () => {
     const [cvFile, setCvFile] = useState<File | undefined>(undefined);
     const [submitted, setSubmitted] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -59,9 +61,18 @@ const SubmitCVPage: React.FC = () => {
                         <input type="text" name="lastName" id="lastName" value={formData.lastName} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" />
                     </div>
                 </div>
-                 <div>
-                    <label htmlFor="age" className="block text-sm font-medium text-gray-700">Âge</label>
-                    <input type="number" name="age" id="age" value={formData.age} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" />
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label htmlFor="age" className="block text-sm font-medium text-gray-700">Âge</label>
+                        <input type="number" name="age" id="age" value={formData.age} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" />
+                    </div>
+                     <div>
+                        <label htmlFor="commune" className="block text-sm font-medium text-gray-700">Commune de résidence</label>
+                        <select name="commune" id="commune" value={formData.commune} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue bg-white">
+                            <option value="" disabled>-- Sélectionnez --</option>
+                            {COMMUNES.sort().map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
                 </div>
                  <div>
                     <label htmlFor="diploma" className="block text-sm font-medium text-gray-700">Diplôme(s)</label>
