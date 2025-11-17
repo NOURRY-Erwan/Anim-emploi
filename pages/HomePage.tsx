@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -60,7 +59,6 @@ const HomePage: React.FC = () => {
              <ul className="mt-2 list-disc list-inside text-gray-600 space-y-1">
                 <li>Consulte les offres locales publiées par les structures du territoire.</li>
                 <li>Crée ton profil candidat pour être contacté directement.</li>
-                <li>Reste informé des formations BAFA, BAFD et des opportunités d’emploi saisonnier.</li>
             </ul>
         </div>
          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-morlaix-green">
@@ -69,7 +67,6 @@ const HomePage: React.FC = () => {
             <ul className="mt-2 list-disc list-inside text-gray-600 space-y-1">
                 <li>Faciliter la mise en relation entre animateurs et structures locales.</li>
                 <li>Valoriser les métiers de l’animation sur le territoire.</li>
-                <li>Renforcer le réseau jeunesse autour de valeurs communes : partage, éducation, engagement.</li>
             </ul>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-morlaix-red">
@@ -78,7 +75,6 @@ const HomePage: React.FC = () => {
             <ul className="mt-2 list-disc list-inside text-gray-600 space-y-1">
                 <li>Publie gratuitement tes offres d’emploi.</li>
                 <li>Gagne du temps en recevant des candidatures ciblées sur ton territoire.</li>
-                <li>Valorise ton projet éducatif et rejoins le réseau des acteurs jeunesse de Morlaix Communauté.</li>
             </ul>
         </div>
       </div>

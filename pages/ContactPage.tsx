@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const ContactPage: React.FC = () => {
@@ -13,17 +12,16 @@ const ContactPage: React.FC = () => {
             Pour toute question concernant le site Anim'emploi, vous pouvez contacter le service jeunesse de Morlaix Communauté.
           </p>
           <ul className="mt-2 text-gray-600 list-none space-y-1">
-            <li><strong>Email :</strong> <a href="mailto:contact@animemploi-morlaix.fr" className="text-morlaix-blue hover:underline">contact@animemploi-morlaix.fr</a></li>
-            <li><strong>Téléphone :</strong> 02 98 15 31 31</li>
-            <li><strong>Adresse :</strong> 2b Voie d'Accès au Port, 29600 Morlaix</li>
+            <li><strong>Email :</strong> <a href="mailto:servicejeunesse@ville-carantec.com" className="text-morlaix-blue hover:underline">servicejeunesse@ville-carantec.com</a></li>
+            <li><strong>Téléphone :</strong> 02 98 78 35 25</li>
+            <li><strong>Adresse :</strong> 11 rue Duquesne 29660 Carantec</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-morlaix-blue mb-3">Mentions Légales</h2>
           <div className="prose max-w-none text-gray-700">
-            <p><strong>Éditeur du site :</strong> Morlaix Communauté</p>
-            <p><strong>Directeur de la publication :</strong> Le Président de Morlaix Communauté</p>
+            <p><strong>Éditeur du site :</strong> Erwan NOURRY</p>
             <p><strong>Hébergement :</strong> Ce site est une démonstration et n'est pas hébergé publiquement. Le code est fourni pour être déployé sur un service au choix (NAS Synology, Softr, etc.).</p>
           </div>
         </section>
