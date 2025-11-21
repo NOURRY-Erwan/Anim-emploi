@@ -175,7 +175,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   // --- Structure Management State ---
-  const [structures, setStructures] = useState<Structure[]>(() => getFromLocalStorage<Structure[]>('structures', INITIAL_STRUCTURES_DATA));
+  const [structures, setStructures] = useState<Structure[]>(() => {
+    const stored = getFromLocalStorage<Structure[]>('structures', INITIAL_STRUCTURES_DATA);
+    // FIX: Si le stockage local retourne un tableau vide (ce qui arrive si l'utilisateur a visité le site "vide"),
+    // on force le chargement des données de démo pour que le site ne paraisse pas vide.
+    if (Array.isArray(stored) && stored.length === 0) {
+        return INITIAL_STRUCTURES_DATA;
+    }
+    return stored;
+  });
 
   useEffect(() => {
     localStorage.setItem('structures', JSON.stringify(structures));
@@ -240,7 +248,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
 
   // --- Job Offer Management ---
-  const [jobOffers, setJobOffers] = useState<JobOffer[]>(() => getFromLocalStorage<JobOffer[]>('jobOffers', INITIAL_JOB_OFFERS));
+  const [jobOffers, setJobOffers] = useState<JobOffer[]>(() => {
+    const stored = getFromLocalStorage<JobOffer[]>('jobOffers', INITIAL_JOB_OFFERS);
+    // FIX: Même logique pour les offres d'emploi
+    if (Array.isArray(stored) && stored.length === 0) {
+        return INITIAL_JOB_OFFERS;
+    }
+    return stored;
+  });
 
   useEffect(() => {
     localStorage.setItem('jobOffers', JSON.stringify(jobOffers));
@@ -310,7 +325,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         localStorage.removeItem('jobOffers');
         localStorage.removeItem('cvSubmissions');
         localStorage.removeItem('users');
-        // Keep current session if possible, or clear it too. Let's keep session to avoid re-login if admin
         window.location.reload();
     }
   }, []);
