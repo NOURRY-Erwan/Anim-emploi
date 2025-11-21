@@ -115,8 +115,6 @@ interface AppContextType {
   toggleJobOfferStatus: (id: string) => void;
   
   cvSubmissions: CVSubmission[];
-  // FIX: Corrected the type signature for addCVSubmission to accept an optional cvFile property.
-  // This resolves a type error in SubmitCVPage.tsx where an object with cvFile was being passed.
   addCVSubmission: (cv: Omit<CVSubmission, 'id'> & { cvFile?: File }) => void;
   deleteCVSubmission: (id: string) => void;
   
@@ -131,6 +129,9 @@ interface AppContextType {
   login: (email: string, password: string) => User | null;
   logout: () => void;
   signup: (email: string, password: string, structureName: string) => User | null;
+
+  // Maintenance
+  resetData: () => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -155,7 +156,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   useEffect(() => {
-    // Don't store password in local storage in a real app
     localStorage.setItem('users', JSON.stringify(users));
   }, [users]);
 
@@ -278,7 +278,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem('cvSubmissions', JSON.stringify(cvSubmissions));
   }, [cvSubmissions]);
 
-  // FIX: Updated the function signature to match the corrected type in AppContextType and removed the unnecessary type assertion.
   const addCVSubmission = useCallback((cvData: Omit<CVSubmission, 'id'> & { cvFile?: File }) => {
     const { cvFile, ...restOfData } = cvData;
     const newCV: CVSubmission = {
@@ -304,11 +303,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
 
+  // --- Reset Data ---
+  const resetData = useCallback(() => {
+    if(window.confirm("Attention : Cela va effacer toutes les données enregistrées localement (structures créées, offres, CVs) et recharger les données par défaut du code. Continuer ?")) {
+        localStorage.removeItem('structures');
+        localStorage.removeItem('jobOffers');
+        localStorage.removeItem('cvSubmissions');
+        localStorage.removeItem('users');
+        // Keep current session if possible, or clear it too. Let's keep session to avoid re-login if admin
+        window.location.reload();
+    }
+  }, []);
+
+
   const value = { 
     jobOffers, addJobOffer, toggleJobOfferStatus, 
     cvSubmissions, addCVSubmission, deleteCVSubmission,
     structures, addStructure, updateStructure, deleteStructure, getStructureByUserId,
-    currentUser, login, logout, signup
+    currentUser, login, logout, signup,
+    resetData
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
