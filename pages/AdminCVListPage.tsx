@@ -35,7 +35,7 @@ const AdminCVListPage: React.FC = () => {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidat</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commune</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diplôme(s)</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diplôme(s) & Certif.</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV</th>
                             <th scope="col" className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
                         </tr>
@@ -55,7 +55,16 @@ const AdminCVListPage: React.FC = () => {
                                         <div className="text-sm text-gray-600">{cv.contact}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-600">{cv.diploma}</div>
+                                        <div className="text-sm font-medium text-gray-800">{cv.diploma}</div>
+                                        {cv.certifications && cv.certifications.length > 0 && (
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {cv.certifications.map(c => (
+                                                    <span key={c} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {c}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {cv.cvFileDataUrl && cv.cvFileName ? (

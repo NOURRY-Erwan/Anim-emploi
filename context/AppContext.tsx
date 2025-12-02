@@ -14,6 +14,14 @@ const getFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
   }
 };
 
+// --- Constants for LocalStorage Keys (Versioned to force refresh) ---
+const STORAGE_KEYS = {
+    STRUCTURES: 'structures_v2', // Changed key to force refresh due to schema change
+    JOBS: 'jobOffers_v1',
+    CVS: 'cvSubmissions_v2', // Updated version for new certifications field
+    USERS: 'users_v1'
+};
+
 // --- Initial Data for Structures (used if localStorage is empty) ---
 const INITIAL_STRUCTURES_DATA: Structure[] = [
   {
@@ -33,7 +41,12 @@ const INITIAL_STRUCTURES_DATA: Structure[] = [
       phone: '02 98 72 37 73',
       registrationLink: '#',
     },
-    website: 'https://www.mairie-plougasnou.fr'
+    socialLinks: [
+        { type: 'Facebook', url: 'https://facebook.com/plougasnou' }
+    ],
+    otherLinks: [
+        { label: 'Site de la Mairie', url: 'https://www.mairie-plougasnou.fr' }
+    ]
   },
   {
     id: 'structure-carantec-2',
@@ -52,7 +65,10 @@ const INITIAL_STRUCTURES_DATA: Structure[] = [
       phone: '02 98 67 00 50',
       registrationLink: '#',
     },
-    website: '#'
+    socialLinks: [
+        { type: 'Instagram', url: 'https://instagram.com' }
+    ],
+    otherLinks: []
   },
   {
     id: 'structure-morlaix-3',
@@ -70,7 +86,14 @@ const INITIAL_STRUCTURES_DATA: Structure[] = [
       email: 'jeunesse@villedemorlaix.org',
       phone: '02 98 15 20 60'
     },
-    website: 'https://www.ville.morlaix.fr'
+    socialLinks: [
+        { type: 'Facebook', url: 'https://facebook.com/morlaixjeunesse' },
+        { type: 'Instagram', url: 'https://instagram.com/morlaixjeunesse' }
+    ],
+    otherLinks: [
+        { label: 'Site Officiel', url: 'https://www.ville.morlaix.fr' },
+        { label: 'Programme des vacances', url: 'https://www.ville.morlaix.fr/programme' }
+    ]
   }
 ];
 
@@ -83,6 +106,7 @@ const INITIAL_CV_SUBMISSIONS: CVSubmission[] = [
       age: '20',
       commune: 'Morlaix',
       diploma: 'BAFA complet',
+      certifications: ['SB', 'APFS'],
       experience: '2 saisons en centre de loisirs (6-10 ans). Spécialité : grands jeux en extérieur et activités manuelles.',
       contact: 'lea.martin@email.com'
     },
@@ -93,6 +117,7 @@ const INITIAL_CV_SUBMISSIONS: CVSubmission[] = [
       age: '24',
       commune: 'Carantec',
       diploma: 'BPJEPS APT (Activités Physiques pour Tous)',
+      certifications: ['BNSSA'],
       experience: 'Animateur sportif depuis 3 ans en service jeunesse. Encadrement de stages multisports (foot, basket, escalade). Permis B.',
       contact: '06 12 34 56 78'
     }
@@ -139,7 +164,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // --- Auth State ---
   const [users, setUsers] = useState<User[]>(() => {
-    const storedUsers = getFromLocalStorage<User[]>('users', []);
+    const storedUsers = getFromLocalStorage<User[]>(STORAGE_KEYS.USERS, []);
     if (!storedUsers.some(u => u.role === 'admin')) {
       return [ADMIN_USER, ...storedUsers];
     }
@@ -156,7 +181,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   }, [users]);
 
   const login = useCallback((email: string, password: string): User | null => {
@@ -176,17 +201,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // --- Structure Management State ---
   const [structures, setStructures] = useState<Structure[]>(() => {
-    const stored = getFromLocalStorage<Structure[]>('structures', INITIAL_STRUCTURES_DATA);
-    // FIX: Si le stockage local retourne un tableau vide (ce qui arrive si l'utilisateur a visité le site "vide"),
-    // on force le chargement des données de démo pour que le site ne paraisse pas vide.
+    const stored = getFromLocalStorage<Structure[]>(STORAGE_KEYS.STRUCTURES, INITIAL_STRUCTURES_DATA);
+    // Robust check: if stored is empty array (happens if user visited empty site before), force default
     if (Array.isArray(stored) && stored.length === 0) {
+        console.log("Structures empty in storage, loading defaults...");
         return INITIAL_STRUCTURES_DATA;
     }
     return stored;
   });
 
   useEffect(() => {
-    localStorage.setItem('structures', JSON.stringify(structures));
+    localStorage.setItem(STORAGE_KEYS.STRUCTURES, JSON.stringify(structures));
   }, [structures]);
 
   const addStructure = useCallback((structureData: Omit<Structure, 'id'>): Structure => {
@@ -211,6 +236,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       commune: '', address: '', ageGroup: '', openingPeriods: '',
       team: '', educationalObjectives: [], activities: [], openingHours: '',
       contact: {},
+      socialLinks: [],
+      otherLinks: []
     });
     
     // Create new User
@@ -249,8 +276,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // --- Job Offer Management ---
   const [jobOffers, setJobOffers] = useState<JobOffer[]>(() => {
-    const stored = getFromLocalStorage<JobOffer[]>('jobOffers', INITIAL_JOB_OFFERS);
-    // FIX: Même logique pour les offres d'emploi
+    const stored = getFromLocalStorage<JobOffer[]>(STORAGE_KEYS.JOBS, INITIAL_JOB_OFFERS);
     if (Array.isArray(stored) && stored.length === 0) {
         return INITIAL_JOB_OFFERS;
     }
@@ -258,7 +284,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   useEffect(() => {
-    localStorage.setItem('jobOffers', JSON.stringify(jobOffers));
+    localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobOffers));
   }, [jobOffers]);
 
   const addJobOffer = useCallback((offer: Omit<JobOffer, 'id' | 'active' | 'userId' | 'structureId'| 'structure' | 'commune'>) => {
@@ -287,10 +313,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   // --- CV Management ---
-  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>('cvSubmissions', INITIAL_CV_SUBMISSIONS));
+  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>(STORAGE_KEYS.CVS, INITIAL_CV_SUBMISSIONS));
 
   useEffect(() => {
-    localStorage.setItem('cvSubmissions', JSON.stringify(cvSubmissions));
+    localStorage.setItem(STORAGE_KEYS.CVS, JSON.stringify(cvSubmissions));
   }, [cvSubmissions]);
 
   const addCVSubmission = useCallback((cvData: Omit<CVSubmission, 'id'> & { cvFile?: File }) => {
@@ -320,11 +346,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // --- Reset Data ---
   const resetData = useCallback(() => {
-    if(window.confirm("Attention : Cela va effacer toutes les données enregistrées localement (structures créées, offres, CVs) et recharger les données par défaut du code. Continuer ?")) {
-        localStorage.removeItem('structures');
-        localStorage.removeItem('jobOffers');
-        localStorage.removeItem('cvSubmissions');
-        localStorage.removeItem('users');
+    if(window.confirm("Attention : Cela va recharger les données par défaut (structures d'exemple, offres). Les données ajoutées manuellement seront perdues. Continuer ?")) {
+        localStorage.removeItem(STORAGE_KEYS.STRUCTURES);
+        localStorage.removeItem(STORAGE_KEYS.JOBS);
+        localStorage.removeItem(STORAGE_KEYS.CVS);
+        localStorage.removeItem(STORAGE_KEYS.USERS);
         window.location.reload();
     }
   }, []);

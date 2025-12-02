@@ -28,7 +28,7 @@ export enum AgeGroup {
 
 export enum ActivityPeriod {
   MERCREDI = 'Mercredi',
-  HIVER = "Vacances d'hivers",
+  HIVER = "Vacances d'hiver",
   PRINTEMPS = 'Vacances de printemps',
   ETE = "Vacances d'été",
   AUTOMNE = "Vacances d'automne",
@@ -62,10 +62,23 @@ export interface CVSubmission {
   age: string;
   commune: string;
   diploma: string;
+  certifications?: string[]; // SB, APFS, BNSSA
   experience: string;
   cvFileName?: string;
   cvFileDataUrl?: string;
   contact: string;
+}
+
+export type SocialNetwork = 'Facebook' | 'Instagram' | 'LinkedIn' | 'Twitter' | 'TikTok' | 'Autre';
+
+export interface SocialLink {
+  type: SocialNetwork;
+  url: string;
+}
+
+export interface OtherLink {
+  label: string;
+  url: string;
 }
 
 export interface Structure {
@@ -85,7 +98,9 @@ export interface Structure {
     phone?: string;
     registrationLink?: string;
   };
-  website?: string;
+  // Replaced simple website string with arrays
+  socialLinks: SocialLink[];
+  otherLinks: OtherLink[];
 }
 
 export interface User {

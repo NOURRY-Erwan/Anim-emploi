@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const ContactPage: React.FC = () => {
@@ -33,7 +34,7 @@ const ContactPage: React.FC = () => {
                 Anim'emploi s'engage à ce que la collecte et le traitement de vos données, effectués à partir de ce site, soient conformes au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.
               </p>
               <p>
-                <strong>Collecte des données :</strong> Les informations recueillies sur les formulaires "Publier une offre" et "Déposer un CV" sont enregistrées dans un fichier informatisé temporaire pour la gestion des annonces. Elles sont destinées uniquement aux services habilités de Morlaix Communauté et aux structures cherchant à recruter.
+                <strong>Collecte des données :</strong> Les informations recueillies sur les formulaires "Publier une offre" et "Déposer un CV" sont enregistrées dans un fichier informatisé temporaire pour la gestion des annonces. Elles sont destinées uniquement aux services et structures cherchant à recruter.
               </p>
                <p>
                 <strong>Durée de conservation :</strong> Les données sont conservées pendant la durée de la saison de recrutement et sont supprimées par la suite, sauf demande contraire de votre part. Les CV sont conservés pour une durée maximale de 12 mois.

@@ -16,12 +16,21 @@ const SubmitCVPage: React.FC = () => {
         experience: '',
         contact: ''
     });
+    const [certifications, setCertifications] = useState<string[]>([]);
     const [cvFile, setCvFile] = useState<File | undefined>(undefined);
+    const [gdprConsent, setGdprConsent] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleCertificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value, checked } = e.target;
+        setCertifications(prev => 
+            checked ? [...prev, value] : prev.filter(c => c !== value)
+        );
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +41,11 @@ const SubmitCVPage: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addCVSubmission({ ...formData, cvFile });
+        if (!gdprConsent) {
+            alert("Veuillez valider la politique de confidentialité (RGPD) pour continuer.");
+            return;
+        }
+        addCVSubmission({ ...formData, certifications, cvFile });
         setSubmitted(true);
         setTimeout(() => navigate('/offres'), 3000);
     };
@@ -78,6 +91,25 @@ const SubmitCVPage: React.FC = () => {
                     <label htmlFor="diploma" className="block text-sm font-medium text-gray-700">Diplôme(s)</label>
                     <input type="text" name="diploma" id="diploma" value={formData.diploma} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" placeholder="BAFA, BAFD, BPJEPS..." />
                 </div>
+                
+                <fieldset>
+                    <legend className="block text-sm font-medium text-gray-700">Qualifications complémentaires</legend>
+                    <div className="mt-2 flex flex-wrap gap-4">
+                        <div className="flex items-center">
+                            <input id="cert-SB" value="SB" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
+                            <label htmlFor="cert-SB" className="ml-2 block text-sm text-gray-900">SB</label>
+                        </div>
+                        <div className="flex items-center">
+                            <input id="cert-APFS" value="APFS" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
+                            <label htmlFor="cert-APFS" className="ml-2 block text-sm text-gray-900">APFS</label>
+                        </div>
+                        <div className="flex items-center">
+                            <input id="cert-BNSSA" value="BNSSA" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
+                            <label htmlFor="cert-BNSSA" className="ml-2 block text-sm text-gray-900">BNSSA</label>
+                        </div>
+                    </div>
+                </fieldset>
+
                  <div>
                     <label htmlFor="contact" className="block text-sm font-medium text-gray-700">Contact (mail ou téléphone)</label>
                     <input type="text" name="contact" id="contact" value={formData.contact} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" />
@@ -90,6 +122,25 @@ const SubmitCVPage: React.FC = () => {
                     <label htmlFor="cvFile" className="block text-sm font-medium text-gray-700">Fichier CV (PDF, Word)</label>
                     <input type="file" name="cvFile" id="cvFile" onChange={handleFileChange} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-morlaix-blue file:text-white hover:file:bg-blue-700" accept=".pdf,.doc,.docx" />
                 </div>
+
+                <div className="flex items-start">
+                    <div className="flex items-center h-5">
+                        <input
+                            id="gdpr"
+                            name="gdpr"
+                            type="checkbox"
+                            checked={gdprConsent}
+                            onChange={(e) => setGdprConsent(e.target.checked)}
+                            required
+                            className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue"
+                        />
+                    </div>
+                    <div className="ml-3 text-sm">
+                        <label htmlFor="gdpr" className="font-medium text-gray-700">J'ai lu le RGPD et je le valide</label>
+                        <p className="text-gray-500">En cochant cette case, j'accepte que mes données soient transmises aux structures de recrutement du territoire.</p>
+                    </div>
+                </div>
+
                 <div>
                     <button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-morlaix-green hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-morlaix-green transition-colors">
                         Déposer mon CV
