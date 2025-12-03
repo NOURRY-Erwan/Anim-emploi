@@ -16,9 +16,9 @@ const getFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
 
 // --- Constants for LocalStorage Keys (Versioned to force refresh) ---
 const STORAGE_KEYS = {
-    STRUCTURES: 'structures_v2', // Changed key to force refresh due to schema change
-    JOBS: 'jobOffers_v1',
-    CVS: 'cvSubmissions_v2', // Updated version for new certifications field
+    STRUCTURES: 'structures_v3', // Incremented version to apply new schema
+    JOBS: 'jobOffers_v2', // Incremented version for spelling fix
+    CVS: 'cvSubmissions_v3', // Incremented version for certifications
     USERS: 'users_v1'
 };
 
@@ -204,7 +204,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const stored = getFromLocalStorage<Structure[]>(STORAGE_KEYS.STRUCTURES, INITIAL_STRUCTURES_DATA);
     // Robust check: if stored is empty array (happens if user visited empty site before), force default
     if (Array.isArray(stored) && stored.length === 0) {
-        console.log("Structures empty in storage, loading defaults...");
         return INITIAL_STRUCTURES_DATA;
     }
     return stored;
@@ -229,7 +228,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return null;
     }
     
-    // Create new Structure first
+    // Create new Structure first with default empty arrays for links
     const newStructure = addStructure({
       userId: '', // will be updated
       name: structureName,

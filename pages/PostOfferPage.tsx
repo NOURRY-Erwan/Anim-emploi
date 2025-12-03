@@ -153,8 +153,11 @@ const PostOfferPage: React.FC = () => {
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea name="description" id="description" value={formData.description} onChange={handleChange} required rows={4} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" />
                 </div>
-                <div>
-                    <button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-morlaix-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-morlaix-red transition-colors">
+                <div className="flex gap-4">
+                     <button type="button" onClick={() => navigate('/mon-compte')} className="w-1/3 flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit" className="w-2/3 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-morlaix-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-morlaix-red transition-colors">
                         Publier l'offre
                     </button>
                 </div>

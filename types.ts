@@ -98,7 +98,6 @@ export interface Structure {
     phone?: string;
     registrationLink?: string;
   };
-  // Replaced simple website string with arrays
   socialLinks: SocialLink[];
   otherLinks: OtherLink[];
 }

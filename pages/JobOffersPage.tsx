@@ -6,10 +6,9 @@ import { COMMUNES } from '../constants';
 import JobOfferCard from '../components/JobOfferCard';
 import JobOfferModal from '../components/JobOfferModal';
 
-const JobOffersPage: React.FC = () => {
-  const { jobOffers, toggleJobOfferStatus } = useAppContext();
-  const [selectedOffer, setSelectedOffer] = useState<JobOffer | null>(null);
-  const [filters, setFilters] = useState({
+const XMarkIcon = ({ className }: { className: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>;
+
+const initialFilters = {
     searchTerm: '',
     diplomas: [] as Diploma[],
     commune: '',
@@ -20,7 +19,12 @@ const JobOffersPage: React.FC = () => {
     activityPeriods: [] as ActivityPeriod[],
     startDate: '',
     endDate: '',
-  });
+};
+
+const JobOffersPage: React.FC = () => {
+  const { jobOffers, toggleJobOfferStatus } = useAppContext();
+  const [selectedOffer, setSelectedOffer] = useState<JobOffer | null>(null);
+  const [filters, setFilters] = useState(initialFilters);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -50,6 +54,10 @@ const JobOffersPage: React.FC = () => {
     });
   };
 
+  const resetFilters = () => {
+      setFilters(initialFilters);
+  };
+
   const filteredOffers = useMemo(() => {
     return jobOffers.filter(offer => {
       const searchTermMatch =
@@ -76,8 +84,19 @@ const JobOffersPage: React.FC = () => {
   return (
     <div>
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h1 className="text-3xl font-bold font-montserrat text-gray-800">Offres d'emploi</h1>
-        <p className="mt-2 text-gray-600">Trouvez votre prochaine mission d'animation sur le territoire de Morlaix.</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+            <div>
+                <h1 className="text-3xl font-bold font-montserrat text-gray-800">Offres d'emploi</h1>
+                <p className="mt-2 text-gray-600">Trouvez votre prochaine mission d'animation sur le territoire de Morlaix.</p>
+            </div>
+            <button 
+                onClick={resetFilters}
+                className="mt-4 md:mt-0 flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-morlaix-blue transition-colors border border-gray-300 px-3 py-1.5 rounded-md hover:border-morlaix-blue bg-white"
+            >
+                <XMarkIcon className="h-4 w-4" />
+                Réinitialiser les filtres
+            </button>
+        </div>
         
         <div className="mt-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -126,9 +145,9 @@ const JobOffersPage: React.FC = () => {
                   </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <details className="border rounded-md p-2"><summary className="cursor-pointer font-semibold">Diplômes requis</summary><div className="mt-2 grid grid-cols-2 gap-2">{Object.values(Diploma).map(d => (<div key={d} className="flex items-center"><input type="checkbox" id={`diploma-${d}`} value={d} onChange={e => handleCheckboxFilterChange(e, 'diplomas')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`diploma-${d}`} className="ml-2 text-sm text-gray-700">{d}</label></div>))}</div></details>
-                <details className="border rounded-md p-2"><summary className="cursor-pointer font-semibold">Tranches d'âge</summary><div className="mt-2 grid grid-cols-2 gap-2">{Object.values(AgeGroup).map(ag => (<div key={ag} className="flex items-center"><input type="checkbox" id={`age-${ag}`} value={ag} onChange={e => handleCheckboxFilterChange(e, 'ageGroups')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`age-${ag}`} className="ml-2 text-sm text-gray-700">{ag}</label></div>))}</div></details>
-                <details className="border rounded-md p-2"><summary className="cursor-pointer font-semibold">Périodes d'activité</summary><div className="mt-2 grid grid-cols-1 gap-2">{Object.values(ActivityPeriod).map(ap => (<div key={ap} className="flex items-center"><input type="checkbox" id={`activity-${ap}`} value={ap} onChange={e => handleCheckboxFilterChange(e, 'activityPeriods')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`activity-${ap}`} className="ml-2 text-sm text-gray-700">{ap}</label></div>))}</div></details>
+                <details className="border rounded-md p-2" open={filters.diplomas.length > 0}><summary className="cursor-pointer font-semibold">Diplômes requis</summary><div className="mt-2 grid grid-cols-2 gap-2">{Object.values(Diploma).map(d => (<div key={d} className="flex items-center"><input type="checkbox" id={`diploma-${d}`} value={d} checked={filters.diplomas.includes(d)} onChange={e => handleCheckboxFilterChange(e, 'diplomas')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`diploma-${d}`} className="ml-2 text-sm text-gray-700">{d}</label></div>))}</div></details>
+                <details className="border rounded-md p-2" open={filters.ageGroups.length > 0}><summary className="cursor-pointer font-semibold">Tranches d'âge</summary><div className="mt-2 grid grid-cols-2 gap-2">{Object.values(AgeGroup).map(ag => (<div key={ag} className="flex items-center"><input type="checkbox" id={`age-${ag}`} value={ag} checked={filters.ageGroups.includes(ag)} onChange={e => handleCheckboxFilterChange(e, 'ageGroups')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`age-${ag}`} className="ml-2 text-sm text-gray-700">{ag}</label></div>))}</div></details>
+                <details className="border rounded-md p-2" open={filters.activityPeriods.length > 0}><summary className="cursor-pointer font-semibold">Périodes d'activité</summary><div className="mt-2 grid grid-cols-1 gap-2">{Object.values(ActivityPeriod).map(ap => (<div key={ap} className="flex items-center"><input type="checkbox" id={`activity-${ap}`} value={ap} checked={filters.activityPeriods.includes(ap)} onChange={e => handleCheckboxFilterChange(e, 'activityPeriods')} className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" /><label htmlFor={`activity-${ap}`} className="ml-2 text-sm text-gray-700">{ap}</label></div>))}</div></details>
             </div>
              <div className="flex items-center justify-self-start pt-2">
                 <input

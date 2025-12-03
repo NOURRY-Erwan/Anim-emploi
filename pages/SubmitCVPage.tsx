@@ -35,7 +35,15 @@ const SubmitCVPage: React.FC = () => {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setCvFile(e.target.files[0]);
+            const file = e.target.files[0];
+            // Limitation technique LocalStorage (demo) : max 300Ko
+            if (file.size > 300 * 1024) {
+                alert("Pour cette version de démonstration, le fichier ne doit pas dépasser 300 Ko.");
+                e.target.value = ""; // Reset input
+                setCvFile(undefined);
+                return;
+            }
+            setCvFile(file);
         }
     };
 
@@ -101,7 +109,7 @@ const SubmitCVPage: React.FC = () => {
                         </div>
                         <div className="flex items-center">
                             <input id="cert-APFS" value="APFS" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
-                            <label htmlFor="cert-APFS" className="ml-2 block text-sm text-gray-900">APFS</label>
+                            <label htmlFor="cert-APFS" className="ml-2 block text-sm text-gray-900">APFS / PSC1</label>
                         </div>
                         <div className="flex items-center">
                             <input id="cert-BNSSA" value="BNSSA" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
@@ -119,7 +127,7 @@ const SubmitCVPage: React.FC = () => {
                     <textarea name="experience" id="experience" value={formData.experience} onChange={handleChange} required rows={4} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-morlaix-blue focus:border-morlaix-blue" placeholder="Ex: 3 étés en centre de loisirs, spécialité grands jeux..." />
                 </div>
                  <div>
-                    <label htmlFor="cvFile" className="block text-sm font-medium text-gray-700">Fichier CV (PDF, Word)</label>
+                    <label htmlFor="cvFile" className="block text-sm font-medium text-gray-700">Fichier CV (PDF, Word) - Max 300Ko</label>
                     <input type="file" name="cvFile" id="cvFile" onChange={handleFileChange} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-morlaix-blue file:text-white hover:file:bg-blue-700" accept=".pdf,.doc,.docx" />
                 </div>
 
@@ -137,7 +145,7 @@ const SubmitCVPage: React.FC = () => {
                     </div>
                     <div className="ml-3 text-sm">
                         <label htmlFor="gdpr" className="font-medium text-gray-700">J'ai lu le RGPD et je le valide</label>
-                        <p className="text-gray-500">En cochant cette case, j'accepte que mes données soient transmises aux structures de recrutement du territoire.</p>
+                        <p className="text-gray-500">En cochant cette case, j'accepte que mes données soient transmises aux services et structures cherchant à recruter.</p>
                     </div>
                 </div>
 
