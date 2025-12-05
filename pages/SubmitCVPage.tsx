@@ -108,8 +108,8 @@ const SubmitCVPage: React.FC = () => {
                             <label htmlFor="cert-SB" className="ml-2 block text-sm text-gray-900">SB</label>
                         </div>
                         <div className="flex items-center">
-                            <input id="cert-APFS" value="APFS" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
-                            <label htmlFor="cert-APFS" className="ml-2 block text-sm text-gray-900">APFS / PSC1</label>
+                            <input id="cert-PSC1" value="PSC1" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />
+                            <label htmlFor="cert-PSC1" className="ml-2 block text-sm text-gray-900">PSC1</label>
                         </div>
                         <div className="flex items-center">
                             <input id="cert-BNSSA" value="BNSSA" onChange={handleCertificationChange} type="checkbox" className="h-4 w-4 rounded border-gray-300 text-morlaix-blue focus:ring-morlaix-blue" />

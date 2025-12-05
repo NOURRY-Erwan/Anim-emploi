@@ -106,7 +106,7 @@ const INITIAL_CV_SUBMISSIONS: CVSubmission[] = [
       age: '20',
       commune: 'Morlaix',
       diploma: 'BAFA complet',
-      certifications: ['SB', 'APFS'],
+      certifications: ['SB', 'PSC1'],
       experience: '2 saisons en centre de loisirs (6-10 ans). Spécialité : grands jeux en extérieur et activités manuelles.',
       contact: 'lea.martin@email.com'
     },
