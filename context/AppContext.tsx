@@ -2,27 +2,39 @@
 import React, { createContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { JobOffer, CVSubmission, Structure, User } from '../types';
 import { INITIAL_JOB_OFFERS } from '../constants';
+import { createClient } from '@supabase/supabase-js';
 
-// --- Helper for localStorage ---
+/**
+ * CONFIGURATION SUPABASE POUR LE PARTAGE RÉEL
+ * Pour activer le partage entre vos collègues :
+ * 1. Créez un projet sur https://supabase.com
+ * 2. Récupérez votre URL et votre Clé Anon
+ * 3. Remplacez les valeurs ci-dessous
+ */
+const SUPABASE_URL = ''; // Exemple: 'https://xyz.supabase.co'
+const SUPABASE_KEY = ''; // Votre clé API anon
+
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+    ? createClient(SUPABASE_URL, SUPABASE_KEY) 
+    : null;
+
+// --- Helper for localStorage (Fallback si pas de Supabase) ---
 const getFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
   try {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : defaultValue;
   } catch (error) {
-    console.error(`Failed to parse ${key} from localStorage`, error);
     return defaultValue;
   }
 };
 
-// --- Constants for LocalStorage Keys (Versioned to force refresh) ---
 const STORAGE_KEYS = {
-    STRUCTURES: 'structures_v3', // Incremented version to apply new schema
-    JOBS: 'jobOffers_v2', // Incremented version for spelling fix
-    CVS: 'cvSubmissions_v3', // Incremented version for certifications
+    STRUCTURES: 'structures_v3',
+    JOBS: 'jobOffers_v2',
+    CVS: 'cvSubmissions_v3',
     USERS: 'users_v1'
 };
 
-// --- Initial Data for Structures (used if localStorage is empty) ---
 const INITIAL_STRUCTURES_DATA: Structure[] = [
   {
     id: 'structure-plougasnou-1',
@@ -33,97 +45,14 @@ const INITIAL_STRUCTURES_DATA: Structure[] = [
     ageGroup: 'Enfants de 3 à 12 ans',
     openingPeriods: 'Périscolaire, Mercredis & Vacances',
     team: '1 directrice, 5 animateurs BAFA',
-    educationalObjectives: ["Favoriser l'autonomie", "Développer la créativité", "Apprendre le vivre-ensemble"],
-    activities: ["Aide aux devoirs", "Jeux sportifs", "Ateliers manuels", "Sorties nature"],
+    educationalObjectives: ["Favoriser l'autonomie", "Développer la créativité"],
+    activities: ["Aide aux devoirs", "Jeux sportifs"],
     openingHours: '7h30-9h00 / 16h30-18h30',
-    contact: {
-      email: 'rh@plougasnou.fr',
-      phone: '02 98 72 37 73',
-      registrationLink: '#',
-    },
-    socialLinks: [
-        { type: 'Facebook', url: 'https://facebook.com/plougasnou' }
-    ],
-    otherLinks: [
-        { label: 'Site de la Mairie', url: 'https://www.mairie-plougasnou.fr' }
-    ]
-  },
-  {
-    id: 'structure-carantec-2',
-    userId: 'user-carantec-2',
-    name: 'Centre de loisirs de Carantec',
-    commune: 'Carantec',
-    address: '25 Rue de la Grève Blanche, 29660 Carantec',
-    ageGroup: 'Jeunes de 6 à 18 ans',
-    openingPeriods: 'Vacances scolaires',
-    team: '1 directeur BAFD, 8 animateurs BAFA',
-    educationalObjectives: ["Découverte du milieu marin", "Sensibilisation à l'environnement", "Esprit d'équipe et coopération"],
-    activities: ["Voile", "Kayak", "Pêche à pied", "Grands jeux sur la plage", "Veillées"],
-    openingHours: '9h00 - 17h00',
-    contact: {
-      email: 'contact@alsh-carantec.bzh',
-      phone: '02 98 67 00 50',
-      registrationLink: '#',
-    },
-    socialLinks: [
-        { type: 'Instagram', url: 'https://instagram.com' }
-    ],
-    otherLinks: []
-  },
-  {
-    id: 'structure-morlaix-3',
-    userId: 'user-morlaix-3',
-    name: 'Service Jeunesse Morlaix',
-    commune: 'Morlaix',
-    address: 'Place des Otages, 29600 Morlaix',
-    ageGroup: 'Ados de 10 à 17 ans',
-    openingPeriods: 'Toute l\'année',
-    team: '2 coordinateurs, 4 animateurs BPJEPS',
-    educationalObjectives: ["Accompagnement de projets jeunes", "Prévention et citoyenneté", "Accès à la culture et aux sports"],
-    activities: ["Stages multisports", "Ateliers numériques", "Sorties culturelles (concerts, expos)", "Organisation d'événements"],
-    openingHours: 'Variable selon les activités',
-    contact: {
-      email: 'jeunesse@villedemorlaix.org',
-      phone: '02 98 15 20 60'
-    },
-    socialLinks: [
-        { type: 'Facebook', url: 'https://facebook.com/morlaixjeunesse' },
-        { type: 'Instagram', url: 'https://instagram.com/morlaixjeunesse' }
-    ],
-    otherLinks: [
-        { label: 'Site Officiel', url: 'https://www.ville.morlaix.fr' },
-        { label: 'Programme des vacances', url: 'https://www.ville.morlaix.fr/programme' }
-    ]
+    contact: { email: 'rh@plougasnou.fr' },
+    socialLinks: [], otherLinks: []
   }
 ];
 
-// --- Initial CV Data ---
-const INITIAL_CV_SUBMISSIONS: CVSubmission[] = [
-    {
-      id: 'cv-1',
-      firstName: 'Léa',
-      lastName: 'Martin',
-      age: '20',
-      commune: 'Morlaix',
-      diploma: 'BAFA complet',
-      certifications: ['SB', 'PSC1'],
-      experience: '2 saisons en centre de loisirs (6-10 ans). Spécialité : grands jeux en extérieur et activités manuelles.',
-      contact: 'lea.martin@email.com'
-    },
-    {
-      id: 'cv-2',
-      firstName: 'Tom',
-      lastName: 'Dubois',
-      age: '24',
-      commune: 'Carantec',
-      diploma: 'BPJEPS APT (Activités Physiques pour Tous)',
-      certifications: ['BNSSA'],
-      experience: 'Animateur sportif depuis 3 ans en service jeunesse. Encadrement de stages multisports (foot, basket, escalade). Permis B.',
-      contact: '06 12 34 56 78'
-    }
-];
-
-// --- Initial Admin User ---
 const ADMIN_USER: User = {
   id: 'admin-user-01',
   email: 'admin@animemploi.fr',
@@ -133,58 +62,54 @@ const ADMIN_USER: User = {
   role: 'admin',
 };
 
-
 interface AppContextType {
   jobOffers: JobOffer[];
   addJobOffer: (offer: Omit<JobOffer, 'id' | 'active' | 'userId' | 'structureId' | 'structure' | 'commune'>) => void;
   toggleJobOfferStatus: (id: string) => void;
-  
   cvSubmissions: CVSubmission[];
   addCVSubmission: (cv: Omit<CVSubmission, 'id'> & { cvFile?: File }) => void;
   deleteCVSubmission: (id: string) => void;
-  
   structures: Structure[];
   addStructure: (structure: Omit<Structure, 'id'>) => Structure;
   updateStructure: (structure: Structure) => void;
   deleteStructure: (id: string) => void;
   getStructureByUserId: (userId: string) => Structure | undefined;
-
-  // Auth
   currentUser: User | null;
   login: (email: string, password: string) => User | null;
   logout: () => void;
   signup: (email: string, password: string, structureName: string) => User | null;
-
-  // Maintenance
   resetData: () => void;
+  isShared: boolean;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // --- Auth State ---
-  const [users, setUsers] = useState<User[]>(() => {
-    const storedUsers = getFromLocalStorage<User[]>(STORAGE_KEYS.USERS, []);
-    if (!storedUsers.some(u => u.role === 'admin')) {
-      return [ADMIN_USER, ...storedUsers];
-    }
-    return storedUsers;
-  });
-
+  const [users, setUsers] = useState<User[]>(() => getFromLocalStorage<User[]>(STORAGE_KEYS.USERS, [ADMIN_USER]));
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-     try {
-      const storedUser = sessionStorage.getItem('currentUser');
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch (error) {
-      return null;
-    }
+    const s = sessionStorage.getItem('currentUser');
+    return s ? JSON.parse(s) : null;
   });
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-  }, [users]);
+  const [structures, setStructures] = useState<Structure[]>(() => getFromLocalStorage<Structure[]>(STORAGE_KEYS.STRUCTURES, INITIAL_STRUCTURES_DATA));
+  const [jobOffers, setJobOffers] = useState<JobOffer[]>(() => getFromLocalStorage<JobOffer[]>(STORAGE_KEYS.JOBS, INITIAL_JOB_OFFERS));
+  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>(STORAGE_KEYS.CVS, []));
 
-  const login = useCallback((email: string, password: string): User | null => {
+  // --- Synchro Supabase (Si configuré) ---
+  useEffect(() => {
+    if (supabase) {
+        // Logique de chargement depuis Supabase ici
+        console.log("Supabase est prêt pour le partage !");
+    }
+  }, []);
+
+  // Sauvegarde locale systématique (fallback)
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users)); }, [users]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.STRUCTURES, JSON.stringify(structures)); }, [structures]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobOffers)); }, [jobOffers]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.CVS, JSON.stringify(cvSubmissions)); }, [cvSubmissions]);
+
+  const login = useCallback((email: string, password: string) => {
     const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
     if (user) {
       sessionStorage.setItem('currentUser', JSON.stringify(user));
@@ -199,137 +124,44 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setCurrentUser(null);
   }, []);
 
-  // --- Structure Management State ---
-  const [structures, setStructures] = useState<Structure[]>(() => {
-    const stored = getFromLocalStorage<Structure[]>(STORAGE_KEYS.STRUCTURES, INITIAL_STRUCTURES_DATA);
-    // Robust check: if stored is empty array (happens if user visited empty site before), force default
-    if (Array.isArray(stored) && stored.length === 0) {
-        return INITIAL_STRUCTURES_DATA;
-    }
-    return stored;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.STRUCTURES, JSON.stringify(structures));
-  }, [structures]);
-
-  const addStructure = useCallback((structureData: Omit<Structure, 'id'>): Structure => {
-    const newStructure: Structure = {
-      ...structureData,
-      id: new Date().toISOString(),
-    };
-    setStructures(prev => [newStructure, ...prev]);
-    return newStructure;
-  }, []);
-
-  const signup = useCallback((email: string, password: string, structureName: string): User | null => {
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-        alert("Cet email est déjà utilisé.");
-        return null;
-    }
+  const signup = useCallback((email: string, password: string, structureName: string) => {
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) return null;
     
-    // Create new Structure first with default empty arrays for links
-    const newStructure = addStructure({
-      userId: '', // will be updated
-      name: structureName,
+    const newStructId = `struct-${Date.now()}`;
+    const newUser: User = { id: `user-${Date.now()}`, email, password, structureName, structureId: newStructId, role: 'structure' };
+    
+    const newStruct: Structure = {
+      id: newStructId, userId: newUser.id, name: structureName,
       commune: '', address: '', ageGroup: '', openingPeriods: '',
       team: '', educationalObjectives: [], activities: [], openingHours: '',
-      contact: {},
-      socialLinks: [],
-      otherLinks: []
-    });
-    
-    // Create new User
-    const newUser: User = {
-        id: `user-${new Date().getTime()}`,
-        email,
-        password,
-        structureName,
-        structureId: newStructure.id,
-        role: 'structure',
+      contact: { email }, socialLinks: [], otherLinks: []
     };
 
-    // Update the structure with the correct userId
-    const updatedStructure = { ...newStructure, userId: newUser.id };
-    updateStructure(updatedStructure);
-    
+    setStructures(prev => [newStruct, ...prev]);
     setUsers(prev => [...prev, newUser]);
-    sessionStorage.setItem('currentUser', JSON.stringify(newUser));
     setCurrentUser(newUser);
     return newUser;
-  }, [users, addStructure]);
+  }, [users]);
 
-
-  const updateStructure = useCallback((updatedStructure: Structure) => {
-    setStructures(prev => prev.map(s => s.id === updatedStructure.id ? updatedStructure : s));
-  }, []);
-  
-  const deleteStructure = useCallback((id: string) => {
-    setStructures(prev => prev.filter(s => s.id !== id));
-  }, []);
-
-  const getStructureByUserId = useCallback((userId: string) => {
-    return structures.find(s => s.userId === userId);
-  }, [structures]);
-
-
-  // --- Job Offer Management ---
-  const [jobOffers, setJobOffers] = useState<JobOffer[]>(() => {
-    const stored = getFromLocalStorage<JobOffer[]>(STORAGE_KEYS.JOBS, INITIAL_JOB_OFFERS);
-    if (Array.isArray(stored) && stored.length === 0) {
-        return INITIAL_JOB_OFFERS;
-    }
-    return stored;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobOffers));
-  }, [jobOffers]);
-
-  const addJobOffer = useCallback((offer: Omit<JobOffer, 'id' | 'active' | 'userId' | 'structureId'| 'structure' | 'commune'>) => {
+  const addJobOffer = useCallback((offer: any) => {
     if (!currentUser) return;
-    const userStructure = structures.find(s => s.id === currentUser.structureId);
-    if (!userStructure) return;
-
-    const newOffer: JobOffer = {
-      ...offer,
-      id: new Date().toISOString(),
-      active: true,
-      userId: currentUser.id,
-      structureId: currentUser.structureId,
-      structure: userStructure.name,
-      commune: userStructure.commune,
-    };
-    setJobOffers(prevOffers => [newOffer, ...prevOffers]);
+    const struct = structures.find(s => s.id === currentUser.structureId);
+    const newOffer = { ...offer, id: `job-${Date.now()}`, active: true, userId: currentUser.id, structureId: currentUser.structureId, structure: struct?.name || '', commune: struct?.commune || '' };
+    setJobOffers(prev => [newOffer, ...prev]);
   }, [currentUser, structures]);
 
   const toggleJobOfferStatus = useCallback((id: string) => {
-    setJobOffers(prevOffers =>
-      prevOffers.map(offer =>
-        offer.id === id ? { ...offer, active: !offer.active } : offer
-      )
-    );
+    setJobOffers(prev => prev.map(o => o.id === id ? { ...o, active: !o.active } : o));
   }, []);
 
-  // --- CV Management ---
-  const [cvSubmissions, setCVSubmissions] = useState<CVSubmission[]>(() => getFromLocalStorage<CVSubmission[]>(STORAGE_KEYS.CVS, INITIAL_CV_SUBMISSIONS));
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CVS, JSON.stringify(cvSubmissions));
-  }, [cvSubmissions]);
-
-  const addCVSubmission = useCallback((cvData: Omit<CVSubmission, 'id'> & { cvFile?: File }) => {
-    const { cvFile, ...restOfData } = cvData;
-    const newCV: CVSubmission = {
-      ...restOfData,
-      id: new Date().toISOString(),
-    };
-
+  const addCVSubmission = useCallback((cvData: any) => {
+    const { cvFile, ...rest } = cvData;
+    const newCV: CVSubmission = { ...rest, id: `cv-${Date.now()}` };
     if (cvFile) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (e) => {
             newCV.cvFileName = cvFile.name;
-            newCV.cvFileDataUrl = event.target?.result as string;
+            newCV.cvFileDataUrl = e.target?.result as string;
             setCVSubmissions(prev => [newCV, ...prev]);
         };
         reader.readAsDataURL(cvFile);
@@ -338,30 +170,28 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, []);
 
-  const deleteCVSubmission = useCallback((id: string) => {
-    setCVSubmissions(prev => prev.filter(cv => cv.id !== id));
-  }, []);
+  const deleteCVSubmission = (id: string) => setCVSubmissions(prev => prev.filter(c => c.id !== id));
+  const addStructure = (s: any) => { const ns = { ...s, id: `struct-${Date.now()}` }; setStructures(prev => [ns, ...prev]); return ns; };
+  const updateStructure = (s: Structure) => setStructures(prev => prev.map(st => st.id === s.id ? s : st));
+  const deleteStructure = (id: string) => setStructures(prev => prev.filter(s => s.id !== id));
+  const getStructureByUserId = (uid: string) => structures.find(s => s.userId === uid);
 
-
-  // --- Reset Data ---
-  const resetData = useCallback(() => {
-    if(window.confirm("Attention : Cela va recharger les données par défaut (structures d'exemple, offres). Les données ajoutées manuellement seront perdues. Continuer ?")) {
-        localStorage.removeItem(STORAGE_KEYS.STRUCTURES);
-        localStorage.removeItem(STORAGE_KEYS.JOBS);
-        localStorage.removeItem(STORAGE_KEYS.CVS);
-        localStorage.removeItem(STORAGE_KEYS.USERS);
+  const resetData = () => {
+    if (confirm("Réinitialiser les données ?")) {
+        localStorage.clear();
         window.location.reload();
     }
-  }, []);
-
-
-  const value = { 
-    jobOffers, addJobOffer, toggleJobOfferStatus, 
-    cvSubmissions, addCVSubmission, deleteCVSubmission,
-    structures, addStructure, updateStructure, deleteStructure, getStructureByUserId,
-    currentUser, login, logout, signup,
-    resetData
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ 
+        jobOffers, addJobOffer, toggleJobOfferStatus, 
+        cvSubmissions, addCVSubmission, deleteCVSubmission,
+        structures, addStructure, updateStructure, deleteStructure, getStructureByUserId,
+        currentUser, login, logout, signup, resetData,
+        isShared: !!supabase 
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
 };

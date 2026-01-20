@@ -1,6 +1,14 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
 // https://vitejs.dev/config/
-export default {
-  // L'URL de votre site sera : https://NOURRY-Erwan.github.io/Anim-emploi/
-  // La base doit donc correspondre au nom de votre dépôt.
-  base: "/Anim-emploi/", 
-};
+export default defineConfig({
+  plugins: [react()],
+  // Utiliser './' permet au projet d'être déployé n'importe où (racine ou sous-dossier)
+  // sans avoir à modifier le code. Très utile pour Vercel, Netlify ou GitHub Pages.
+  base: './',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  }
+});

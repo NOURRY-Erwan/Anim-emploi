@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anim’emploi – Territoire de Morlaix</title>
+    <title>Anim’emploi – Portail Jeunesse Morlaix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +14,10 @@
         theme: {
           extend: {
             colors: {
-              'morlaix-blue': '#0084C8',
-              'morlaix-red': '#E53935',
-              'morlaix-green': '#4CAF50',
+              'animem-blue': '#0ea5e9',
+              'animem-dark': '#0369a1',
+              'animem-red': '#f43f5e',
+              'animem-green': '#10b981',
             },
             fontFamily: {
               'sans': ['Open Sans', 'sans-serif'],
@@ -32,12 +33,16 @@
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1"
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>
